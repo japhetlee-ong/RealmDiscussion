@@ -14,6 +14,10 @@ class MainActivity : AppCompatActivity(), OnClickListener{
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.btnOwnerList.setOnClickListener(this)
+        binding.btnPetList.setOnClickListener(this)
+
     }
 
     override fun onClick(p0: View?) {
@@ -23,7 +27,7 @@ class MainActivity : AppCompatActivity(), OnClickListener{
                 startActivity(intent)
             }
             R.id.btn_pet_list -> {
-                val intent = Intent(this,MainActivity::class.java)
+                val intent = Intent(this,PetsActivity::class.java)
                 startActivity(intent)
             }
         }

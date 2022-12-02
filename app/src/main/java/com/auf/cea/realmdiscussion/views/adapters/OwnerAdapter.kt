@@ -10,7 +10,10 @@ class OwnerAdapter(private var ownerList: ArrayList<Owner>) : RecyclerView.Adapt
 
     inner class OwnerViewHolder(private val binding: ContentOwnerRvBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(itemData: Owner){
-
+            with(binding){
+                txtOwnerName.text = String.format("Owner name: %s",itemData.name)
+                txtNumPets.text = String.format("Number of pets: %s", itemData.petCount)
+            }
         }
     }
 

@@ -5,14 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.auf.cea.realmdiscussion.databinding.DialogAddPetBinding
-import kotlinx.coroutines.CoroutineScope
+import com.auf.cea.realmdiscussion.realm.config.RealmConfig
+import com.auf.cea.realmdiscussion.realm.operations.PetDbOperations
+import kotlinx.coroutines.*
 
 class AddPetDialog : DialogFragment() {
 
     private lateinit var binding: DialogAddPetBinding
+    lateinit var refreshDataCallback: RefreshDataInterface
 
+    interface RefreshDataInterface{
+        fun refreshData()
+    }
 
     override fun onStart() {
         super.onStart()
@@ -53,6 +60,21 @@ class AddPetDialog : DialogFragment() {
                     return@setOnClickListener
                 }
 
+                val realmConfig = RealmConfig.getConfiguration()
+                val petDbOperations = PetDbOperations(realmConfig)
+                val petAge = edtAge.text.toString().toInt()
+                val ownerName = if(cbHasOwner.isChecked) edtOwner.text.toString() else ""
+
+                val coroutineContext = Job() + Dispatchers.IO
+                val scope = CoroutineScope(coroutineContext + CoroutineName("AddToDatabase"))
+                scope.launch(Dispatchers.IO){
+                    petDbOperations.insertPet(edtPetName.text.toString(),petAge,edtPetType.text.toString(),ownerName)
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(activity,"Pet has been added", Toast.LENGTH_SHORT).show()
+                        refreshDataCallback.refreshData()
+                        dialog?.dismiss()
+                    }
+                }
             }
         }
 
